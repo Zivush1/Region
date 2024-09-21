@@ -45,7 +45,6 @@ public class DatabaseManager {
 
     private void createTables() {
         try (Statement stmt = connection.createStatement()) {
-            // Create regions table
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS regions (" +
                     "name VARCHAR(64) PRIMARY KEY," +
                     "world VARCHAR(64)," +
@@ -62,7 +61,6 @@ public class DatabaseManager {
                     "ENTITY_DAMAGE VARCHAR(20) DEFAULT 'NONE'" +
                     ")");
 
-            // Create region_members table
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS region_members (" +
                     "region_name VARCHAR(64)," +
                     "player_uuid VARCHAR(36)," +
@@ -111,7 +109,6 @@ public class DatabaseManager {
         try {
             connection.setAutoCommit(false);
 
-            // Check if the region name has changed
             String currentName = getCurrentRegionName(region.getName());
             if (!currentName.equals(region.getName())) {
                 renameRegion(currentName, region.getName());
@@ -189,13 +186,11 @@ public class DatabaseManager {
         String deleteSql = "DELETE FROM region_members WHERE region_name = ?";
         String insertSql = "INSERT INTO region_members (region_name, player_uuid) VALUES (?, ?)";
 
-        // Delete existing members
         try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
             deleteStmt.setString(1, region.getName());
             deleteStmt.executeUpdate();
         }
 
-        // Insert updated members
         try (PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
             for (UUID member : region.getMembers()) {
                 insertStmt.setString(1, region.getName());
@@ -299,7 +294,6 @@ public class DatabaseManager {
         try {
             connection.setAutoCommit(false);
 
-            // 1. Save the members of the region in a list
             List<String> members = new ArrayList<>();
             String selectMembersSql = "SELECT player_uuid FROM region_members WHERE region_name = ?";
             try (PreparedStatement selectStmt = connection.prepareStatement(selectMembersSql)) {
@@ -311,14 +305,14 @@ public class DatabaseManager {
                 }
             }
 
-            // 2. Delete all members of the region
+
             String deleteMembersSql = "DELETE FROM region_members WHERE region_name = ?";
             try (PreparedStatement deleteStmt = connection.prepareStatement(deleteMembersSql)) {
                 deleteStmt.setString(1, oldName);
                 deleteStmt.executeUpdate();
             }
 
-            // 3. Change the name of the region
+
             String updateRegionSql = "UPDATE regions SET name = ? WHERE name = ?";
             try (PreparedStatement updateStmt = connection.prepareStatement(updateRegionSql)) {
                 updateStmt.setString(1, newName);
@@ -326,7 +320,6 @@ public class DatabaseManager {
                 updateStmt.executeUpdate();
             }
 
-            // 4. Recreate the members of the region with the new name
             String insertMembersSql = "INSERT INTO region_members (region_name, player_uuid) VALUES (?, ?)";
             try (PreparedStatement insertStmt = connection.prepareStatement(insertMembersSql)) {
                 for (String member : members) {
