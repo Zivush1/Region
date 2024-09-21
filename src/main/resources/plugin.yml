@@ -1,0 +1,50 @@
+name: Region
+version: '${project.version}'
+main: me.zivush.region.RegionPlugin
+api-version: '1.21'
+commands:
+  region:
+    description: Main command for the Region plugin
+    usage: /<command> [subcommand]
+    aliases: [rg]
+
+permissions:
+  region.*:
+    description: Gives access to all Region plugin commands
+    children:
+      region.menu: true
+      region.create: true
+      region.delete: true
+      region.add: true
+      region.remove: true
+      region.whitelist: true
+      region.flag: true
+      region.wand: true
+      region.bypass: true
+  region.menu:
+    description: Allows access to the region menu
+    default: op
+  region.create:
+    description: Allows creation of new regions
+    default: op
+  region.delete:
+    description: Allows deletion of regions
+    default: op
+  region.add:
+    description: Allows adding members to regions
+    default: op
+  region.remove:
+    description: Allows removing members from regions
+    default: op
+  region.whitelist:
+    description: Allows viewing region whitelists
+    default: op
+  region.flag:
+    description: Allows editing region flags
+    default: op
+  region.wand:
+    description: Allows usage of the region wand
+    default: op
+  region.bypass:
+    description: Allows bypassing all region restrictions
+    default: op
